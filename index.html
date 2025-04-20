@@ -4,11 +4,44 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite</title>
+    <title>DIY A MAP</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <div id="map"></div>
+    
+    <div class="container" id="container">
+      <div id="search-wrapper" style="position: absolute; top: 20px; left: 20px; z-index: 999;">
+
+        <div class="search-box" id="search-box">
+          <input type="text" id="input-box" placeholder="输入城市名称，如: 香港, New York" />
+          <button id="search-btn">查询</button>
+        </div>
+       
+        <div class="style-selector-wrapper">
+          <label for="style-select">Style: </label>
+          <select id="style-select" class="style-select">
+            <option value="GoldenAge.json">Golden Age</option>
+            <option value="Neon.json">Neon</option>
+            <option value="Cyber.json">Cyber</option>
+            <option value="NeoMondrian.json">Neo Mondrian</option>
+            <option value="Terra.json" selected>Terra</option>
+          </select>
+        </div>
+
+      </div>   
+      <div id="map"></div>
+        <div class="info" id="info">
+          <h1 class="city" contenteditable="true">
+            Hong Kong SAR, China
+          </h1>
+          <h3 class="Location" contenteditable="true">
+            Latitude: 22.3964° N Longitude: 114.1095° E
+          </h3>
+        </div>      
+      </div>
+    </div>
+
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,11 +1,15 @@
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import { initMap } from './map';
+import { initPrintSettingsUI, applyPrintSettings } from './print-ui';
+import { initSearchFunctionality } from './search';
+import { initStyleSelect } from './style';
+import { DEFAULT_STYLE } from './constants';
+import { showTooltip } from './tooltip';
 
-const map = new maplibregl.Map({
-    container: 'map', // container id
-    style: 'dark.json', // style URL
-    center: [0, 0], // starting position [lng, lat]
-    zoom: 1 // starting zoom
+document.addEventListener('DOMContentLoaded', () => {
+    initMap(DEFAULT_STYLE);
+    initPrintSettingsUI();
+    showTooltip(); // 显示提示信息
+    initSearchFunctionality();
+    initStyleSelect();
+    applyPrintSettings();
 });
-
-console.log('Map initialized:', map);

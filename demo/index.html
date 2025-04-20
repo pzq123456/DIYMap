@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>城市边界查询工具</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" />
+    <style>
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+      
+      .container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: 800px;
+        height: 1000px;
+        padding: 20px;
+      }
+      
+      .info {
+        width: 100%;
+      }
+      
+      .city {
+        display: flex;
+        justify-content: center;
+      }
+      
+      .Location {
+        display: flex;
+        justify-content: center;
+      }
+      
+      .search-container {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        display: none;
+      }
+      
+      .search-container.visible {
+        display: block;
+      }
+      
+      #search-input {
+        width: 300px;
+        padding: 10px;
+        font-size: 16px;
+      }
+      
+      #search-button {
+        padding: 10px 15px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        margin-left: 5px;
+        cursor: pointer;
+      }
+      
+      .bounding-box {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 4px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="输入城市名称，如: 香港, New York" />
+      <button id="search-button">搜索</button>
+      <div class="hint">按 F 键显示/隐藏搜索框</div>
+    </div>
+    
+    <div class="container">
+      <div id="map"></div>
+      <div class="info">
+        <h1 class="city" id="city-name">
+          Hong Kong SAR, China
+        </h1>
+        <h3 class="Location" id="center-coords">
+          Latitude: 22.3964° N Longitude: 114.1095° E
+        </h3>
+        <div class="bounding-box" id="bounding-box">
+          边界框: [22.15, 22.55, 113.83, 114.43]
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <script>
+      // 初始化地图
+      const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://demotiles.maplibre.org/style.json', // 使用默认样式
+        center: [114.1095, 22.3964], // 香港中心点
+        zoom: 10,
+        attributionControl: false,
+        minZoom: 0,
+        maxZoom: 24,
+        bearing: 0,
+        pitch: 0,
+        fadeDuration: 0
+      });
+
+      // 地图元素
+      let rectangleLayer = null;
+      let centerMarker = null;
+
+      // 搜索功能
+      const searchContainer = document.querySelector('.search-container');
+      const searchInput = document.getElementById('search-input');
+      const searchButton = document.getElementById('search-button');
+      const cityName = document.getElementById('city-name');
+      const centerCoords = document.getElementById('center-coords');
+      const boundingBox = document.getElementById('bounding-box');
+
+      // 按F键切换搜索框
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'f' || e.key === 'F') {
+          searchContainer.classList.toggle('visible');
+          if (searchContainer.classList.contains('visible')) {
+            searchInput.focus();
+          }
+        }
+      });
+
+      // 搜索函数
+      async function searchCity() {
+        const cityNameValue = searchInput.value.trim();
+        if (!cityNameValue) return;
+
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityNameValue)}&format=json&polygon_geojson=1&limit=1`);
+          const data = await response.json();
+          
+          if (data.length === 0) {
+            alert('未找到该城市，请尝试其他名称');
+            return;
+          }
+
+          const city = data[0];
+          const bbox = city.boundingbox.map(coord => parseFloat(coord));
+          const centerLat = parseFloat(city.lat);
+          const centerLon = parseFloat(city.lon);
+          
+          // 更新UI
+          cityName.textContent = city.display_name;
+          centerCoords.textContent = `Latitude: ${centerLat.toFixed(4)}° N Longitude: ${centerLon.toFixed(4)}° E`;
+          boundingBox.textContent = `边界框: [${bbox.join(', ')}]`;
+          
+          // 更新地图
+          if (rectangleLayer) map.removeLayer(rectangleLayer);
+          if (centerMarker) centerMarker.remove();
+          
+          // 添加边界框
+          rectangleLayer = {
+            'id': 'bounding-box',
+            'type': 'line',
+            'source': {
+              'type': 'geojson',
+              'data': {
+                'type': 'Feature',
+                'geometry': {
+                  'type': 'Polygon',
+                  'coordinates': [[
+                    [bbox[2], bbox[0]], // 左下
+                    [bbox[3], bbox[0]], // 右下
+                    [bbox[3], bbox[1]], // 右上
+                    [bbox[2], bbox[1]], // 左上
+                    [bbox[2], bbox[0]]  // 闭合
+                  ]]
+                }
+              }
+            },
+            'layout': {},
+            'paint': {
+              'line-color': '#ff7800',
+              'line-width': 2
+            }
+          };
+          
+          map.addLayer(rectangleLayer);
+          
+          // 添加中心点标记
+          centerMarker = new maplibregl.Marker()
+            .setLngLat([centerLon, centerLat])
+            .setPopup(new maplibregl.Popup().setHTML('<b>中心点</b>'))
+            .addTo(map);
+          
+          // 调整视图
+          map.fitBounds([[bbox[2], bbox[0]], [bbox[3], bbox[1]]], {
+            padding: 50
+          });
+          
+          // 隐藏搜索框
+          searchContainer.classList.remove('visible');
+          searchInput.value = '';
+          
+        } catch (error) {
+          console.error('搜索失败:', error);
+          alert('搜索失败，请稍后再试');
+        }
+      }
+
+      // 事件监听
+      searchButton.addEventListener('click', searchCity);
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchCity();
+      });
+
+      // 地图加载完成后的优化
+      map.on('load', function() {
+        map.setPixelRatio(window.devicePixelRatio || 1);
+        map.triggerRepaint();
+      });
+    </script>
+  </body>
+</html>

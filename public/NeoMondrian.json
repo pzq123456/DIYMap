@@ -1,0 +1,154 @@
+{
+  "version": 8,
+  "name": "NeoMondrianElegance",
+  "metadata": {
+    "description": "A refined map style for wall art with Mondrian-inspired aesthetics"
+  },
+  "sources": {
+    "carto": {
+      "type": "vector",
+      "url": "https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json"
+    }
+  },
+  "sprite": "",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#f8f5f0"
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#c8d8e2",
+        "fill-outline-color": "#a0b4c4"
+      }
+    },
+    {
+      "id": "landuse_residential",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "landuse",
+      "filter": ["==", "class", "residential"],
+      "paint": {
+        "fill-color": "#f5e8c0",
+        "fill-outline-color": "#e0d5b0",
+        "fill-opacity": 0.8
+      }
+    },
+    {
+      "id": "landuse_commercial_park",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "landuse",
+      "filter": ["==", "class", "commercial_park"],
+      "paint": {
+        "fill-color": "#f5e8c0",
+        "fill-outline-color": "#e0d5b0",
+        "fill-opacity": 0.8
+      }
+    },
+    {
+      "id": "landuse_commercial",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "landuse",
+      "filter": ["==", "class", "commercial"],
+      "paint": {
+        "fill-color": "#d94f4f",
+        "fill-outline-color": "#a03c3c",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "landuse_industrial",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "landuse",
+      "filter": ["==", "class", "industrial"],
+      "paint": {
+        "fill-color": "#4a6da7",
+        "fill-outline-color": "#3a5a8c",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "landuse_education",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "landuse",
+      "filter": ["==", "class", "education"],
+      "paint": {
+        "fill-color": "#4a6da7",
+        "fill-outline-color": "#3a5a8c",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "park",
+      "filter": ["any", ["==", "class", "park"], ["==", "class", "nature_reserve"]],
+      "paint": {
+        "fill-color": "#8cb87c",
+        "fill-outline-color": "#7aa56c",
+        "fill-opacity": 0.85
+      }
+    },
+    {
+      "id": "road_major",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "transportation",
+      "filter": ["in", "class", "motorway", "trunk", "primary"],
+      "paint": {
+        "line-color": "#333333",
+        "line-width": {
+          "base": 1.2,
+          "stops": [
+            [6, 0.8],
+            [12, 2.5],
+            [18, 10]
+          ]
+        },
+        "line-opacity": 0.9
+      }
+    },
+    {
+      "id": "road_minor",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "transportation",
+      "filter": ["in", "class", "secondary", "tertiary"],
+      "paint": {
+        "line-color": "#666666",
+        "line-width": {
+          "base": 1.2,
+          "stops": [
+            [6, 0.4],
+            [12, 1.2],
+            [18, 5]
+          ]
+        },
+        "line-opacity": 0.8
+      }
+    },
+    {
+      "id": "buildings",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "building",
+      "paint": {
+        "fill-color": "#e0d5c0",
+        "fill-outline-color": "#d0c5b0",
+        "fill-opacity": 0.7
+      }
+    }
+  ]
+}

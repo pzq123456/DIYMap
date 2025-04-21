@@ -220,17 +220,26 @@ html, body {
   display: block;
   height: 100%;
   width: 40%;
-  background: #00c4ff;
-  animation: slide-left-right 1.2s ease-in-out infinite;
+  background: #fe8605ca;
+  animation: slide-left-right 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   border-radius: 2px;
+  transition: background-color 0.3s ease-in-out; /* Smooth transition for background */
 }
 
 .search-status.success {
   background-color: #4caf50;
+  animation: fade-in 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+  opacity: 1;
+  transition: background-color 0.5s ease-in-out, opacity 0.5s ease-in-out; /* Smooth transitions */
 }
 
 .search-status.failed {
   background-color: #999;
+  animation: fade-in 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+  opacity: 1;
+  transition: background-color 0.5s ease-in-out, opacity 0.5s ease-in-out; /* Smooth transitions */
 }
 
 @keyframes slide-left-right {

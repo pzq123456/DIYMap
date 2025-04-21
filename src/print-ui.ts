@@ -51,11 +51,15 @@ export function applyPrintSettings() {
     container.style.width = mapContainer.style.width = `${pixelSize.width}px`;
     container.style.height = mapContainer.style.height = `${pixelSize.height}px`;
 
+    // 同时将页面也调整为打印大小
+    document.body.style.width = `${pixelSize.width}px`;
+    document.body.style.height = `${pixelSize.height}px`;
+
     const map = getMapInstance();
     map.resize();
     map.triggerRepaint();
 
-    console.log(`应用打印设置: ${paperSize} ${orientation} ${dpi}DPI`);
+    // console.log(`应用打印设置: ${paperSize} ${orientation} ${dpi}DPI`);
 }
 
 function createSelect(id: string, options: (string | number)[], labelFn = (v: any) => v, defaultValue?: string): HTMLSelectElement {

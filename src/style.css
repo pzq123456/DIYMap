@@ -1,35 +1,56 @@
+/* 页面基础布局优化：使容器居中并适应高度 */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+/* 地图容器优化：使用 flex 居中，自适应大小 */
 #map {
   width: 100%;
   height: 100%;
-  /* 居中 */
-  margin: 0 auto;
 }
 
+/* 限制容器尺寸并居中 */
 .container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  width: 800px;
-  height: 1000px;
-  /* 居中 */
-  margin: 0 auto;
+  max-width: 800px;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
+/* 屏幕样式 */
 .info {
+  position: absolute;
+  top: 100px; /* 初始位置 */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(74, 55, 55, 0.064);
+  padding: 15px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  cursor: move;
+  z-index: 2;
   width: 100%;
+  text-align: center;
+  /* 添加过渡效果使拖动更平滑 */
+  transition: box-shadow 0.2s ease;
 }
 
 .city {
   display: flex;
   justify-content: center;
-  font-family: 'Arial', sans-serif;
-  font-size: 24px;
-  font-weight: bold;
+  font-family: serif;
+  font-size: 48px;
   width: 100%;
 }
 
@@ -37,9 +58,8 @@
   display: flex;
   justify-content: center;
   margin: 0 auto;
-  font-size: 16px;
-  font-weight: bold;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 24px;
+  font-family: serif;
   width: 100%;
 }
 
@@ -84,6 +104,7 @@
   font-size: 16px;
   border: 1px solid rgba(115, 148, 48, 0.75);
   border-radius: 4px;
+  width: 100%;
 }
 
 #input-box {
@@ -97,6 +118,8 @@
 .style-selector-wrapper {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding:0 20px;
+  color: #555;
 }
 
 .print-settings-panel {
@@ -151,19 +174,27 @@
   background-color: #5e725e;
 }
 
-/* tooltip 样式 */
 .tooltip {
   position: absolute;
-  background: #fff8c4;
-  border: 1px solid #ffd700;
   padding: 8px 12px;
+  background: #fffefe9a;
   border-radius: 6px;
-  color: #444;
   font-size: 14px;
+  max-width: 200px;
+  overflow: hidden;
   z-index: 1000;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-  animation: fade-in 0.3s ease;
 }
+
+.tooltip-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: #dfa513;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
 
 /* 高亮面板边框 */
 #search-wrapper.highlighted {
@@ -175,4 +206,47 @@
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.search-status {
+  height: 4px;
+  width: 100%;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.search-status.loading::before {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: #00c4ff;
+  animation: slide-left-right 1.2s ease-in-out infinite;
+  border-radius: 2px;
+}
+
+.search-status.success {
+  background-color: #4caf50;
+}
+
+.search-status.failed {
+  background-color: #999;
+}
+
+@keyframes slide-left-right {
+  0% { transform: translateX(0%); }
+  50% { transform: translateX(150%); }
+  100% { transform: translateX(0%); }
+}
+
+
+/* 打印样式 - 确保位置和样式与屏幕显示一致 */
+@media print {  
+  /* 隐藏不需要打印的元素 */
+  #search-wrapper,
+  .print-settings-panel,
+  #search-btn,
+  .style-selector-wrapper {
+    display: none !important;
+  }
 }
